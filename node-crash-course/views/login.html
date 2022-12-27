@@ -1,0 +1,30 @@
+<html lang = "en">
+    <head>
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content="width=device-width, initial-scale=1.0">
+        <title>Node.js Crash Course</title>
+
+    </head>
+    <body>
+        <h1>Login Page</h1>
+        <form>
+            <p id="test">Hello</p>
+            <label for="acc">account:</label><br>
+            <input type="text" id="acc" name="acc"><br>
+            <label for="pw">password:</label><br>
+            <input type="text" id="pw" name="pw">
+            <button onclick="doSomething()">click me!</button>
+            <script>
+                var x = 1;
+                function doSomething(){
+                    document.getElementById("test").innerHTML = x;
+                    acc = document.getElementById("acc").innerHTML;
+                    pw = document.getElementById("pw").innerHTML;
+                    if(acc =="x" && pw =="x"){
+                    x+=1;
+                    }
+                }
+                </script>
+          </form>
+    </body>
+</html>

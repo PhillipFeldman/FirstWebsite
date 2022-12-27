@@ -1,6 +1,6 @@
 /*import{f} from "./hof.js"
 console.log(f)
-need to figure out import/export
+need to figure out import/export 
 */
 var Dog = function(name,age,legs){
     this.name = name;
