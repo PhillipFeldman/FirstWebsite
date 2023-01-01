@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan')
 const app = express();
 //how does ejs know to go to relative_path/views ?
 //register view engine
@@ -7,7 +8,25 @@ app.set('view engine', 'ejs');
 //listen
 app.listen(3000);
 
+//middleware and static files:
+
+app.use(express.static('public'));
+
+
+app.use(morgan('dev'));//3rd party morgan middlware//gives GET/CODE time ms
+
+app.use((req,res, next) => {//app.use is middleware
+console.log('new request made:');
+console.log('host: ', req.hostname);
+console.log('path:',req.path);
+console.log('method: ',req.method);
+next()
+});
 //app.get('/')
+app.use((req,res, next) => {//app.use is middleware
+    console.log('next middleware');
+    next()
+    });
 
 app.get('/',(req,res)=>{
     const blogs = [{title: 'Phil number 1',snippet:'Why phil is the best'},
@@ -43,7 +62,7 @@ app.get('/about-us',(req,res)=>{
     res.redirect('/about');
 })
 
-//404 MUST BE AT THE BOTTOM
+//404 MUST BE AT THE BOTTOM because it is middleware
 app.use((req,res)=>{
     res.status(404).render('404',{title:'404 page'});
     //res.status(404).sendFile('./views/404.html',{root:__dirname});
