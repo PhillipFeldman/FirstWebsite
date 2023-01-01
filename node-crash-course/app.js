@@ -1,8 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-const Blog = require('./models/blog');
 const { response } = require('express');
+const blogRoutes = require('./routes/blogroutes');
 
 //express app
 const app = express();
@@ -24,6 +24,7 @@ app.set('view engine', 'ejs');
 //middleware and static files:
 
 app.use(express.static('public'));
+app.use(express.urlencoded({extended:true}));
 
 
 app.use(morgan('dev'));//3rd party morgan middlware//gives GET/CODE time ms
@@ -82,10 +83,7 @@ res.render('about',{title:'About'});
 
 });
 
-app.get('/blogs/create',(req,res)=>{
 
-    res.render('create',{title:'Create a blog'});
-})
 
 //redirect from about-us to about
 app.get('/about-us',(req,res)=>{
@@ -96,13 +94,7 @@ app.get('/about-us',(req,res)=>{
 
 
 //blog routes
-app.get('/blogs',(req,res)=>{
-    Blog.find().sort({createdAt:-1}).then((result)=>{
-res.render('index',{title:'All Blogs',blogs:result})
-    }).catch((err) => {
-        console.log(err)
-    })
-})
+app.use('/blogs',blogRoutes)
 
 //404 MUST BE AT THE BOTTOM because it is middleware
 app.use((req,res)=>{
