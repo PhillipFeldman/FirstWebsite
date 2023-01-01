@@ -1,19 +1,61 @@
 const express = require('express');
-const morgan = require('morgan')
+const morgan = require('morgan');
+const mongoose = require('mongoose');
+const Blog = require('./models/blog');
+const { response } = require('express');
+
+//express app
 const app = express();
+
+
+//connect to mongodb
+const dbURI = 'mongodb+srv://chillfill:HBSoacOAOEy1tUKU@nodetutorial.dmjnzox.mongodb.net/?retryWrites=true&w=majority'
+mongoose.connect(dbURI,{useNewUrlParser: true, useUnifiedTopology: true}).then((result)=> app.listen(3000)).catch((err)=>console.log(err))
+
+//second arg above is for deprecation warnings
+
 //how does ejs know to go to relative_path/views ?
 //register view engine
 app.set('view engine', 'ejs');
 //app.set('views','myviews')
 //listen
-app.listen(3000);
-
+;
+//HBSoacOAOEy1tUKU
 //middleware and static files:
 
 app.use(express.static('public'));
 
 
 app.use(morgan('dev'));//3rd party morgan middlware//gives GET/CODE time ms
+
+app.get('/add-blog',(req,res)=>{
+const blog = new Blog(
+    {title: 'new Blog2'
+,snippet: 'about my new blog'
+,body:'more about my new blog'
+});
+blog.save().then((result)=>{
+res.send(result)}).catch((err) =>{
+    console.log(err)});
+})
+
+app.get('/all-blogs',(req,res)=>{
+Blog.find().then((result) =>{
+    res.send(result);
+}).catch((err)=>{
+    console.log(err);
+})
+
+})
+
+
+app.get('/single-blog',(req,res)=>{
+    Blog.findById('63b0db94ffc785494f18f32f').then((result)=>{
+        res.send(result)
+    }).catch((err)=>{
+        console.log(err)
+    })
+})
 
 app.use((req,res, next) => {//app.use is middleware
 console.log('new request made:');
@@ -29,19 +71,7 @@ app.use((req,res, next) => {//app.use is middleware
     });
 
 app.get('/',(req,res)=>{
-    const blogs = [{title: 'Phil number 1',snippet:'Why phil is the best'},
-{title: 'how phil became the best', snippet:'step 1: be phil'}]
-
-
-res.render('index',{title: 'Home',blogs:blogs});
-//index is just file name in views....
-//second parameter: {title: 'Home'}
-//is used in index
-//look for ejs tag: <%= title%>
-//on site: hover over tab to see
-    //res.send('<p>home page</p>')
-    
-    //res.sendFile('./views/index.html',{root:__dirname});
+    res.redirect('/blogs');
 });
 
 app.get('/about',(req,res)=>{
@@ -60,6 +90,18 @@ app.get('/blogs/create',(req,res)=>{
 //redirect from about-us to about
 app.get('/about-us',(req,res)=>{
     res.redirect('/about');
+
+
+})
+
+
+//blog routes
+app.get('/blogs',(req,res)=>{
+    Blog.find().sort({createdAt:-1}).then((result)=>{
+res.render('index',{title:'All Blogs',blogs:result})
+    }).catch((err) => {
+        console.log(err)
+    })
 })
 
 //404 MUST BE AT THE BOTTOM because it is middleware
